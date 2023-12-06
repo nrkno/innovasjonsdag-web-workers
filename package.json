@@ -1,0 +1,19 @@
+{
+  "name": "innovasjonsdag-web-workers",
+  "version": "0.0.0",
+  "description": "Forbedre ytelse av canvas-animasjon ved å avlaste hovedtråden med web workers - Innovasjonsdager desember 2023",
+  "main": "script.js",
+  "scripts": {
+    "dev": "vite"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "alea": "1.0.1",
+    "ccapture.js": "1.1.0",
+    "simplex-noise": "4.0.1"
+  },
+  "devDependencies": {
+    "vite": "5.0.6"
+  }
+}
