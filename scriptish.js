@@ -1,99 +1,22 @@
 // Modified from mollerse's gist for simplex loops https://gist.github.com/mollerse/3bcaedb67d463b8d6a6558c3dc634b30
-import alea from 'alea'
-import { createNoise2D, createNoise3D, createNoise4D } from 'simplex-noise'
-const SEED = 'skjalg-2023-10-28'
-let noise2D = createNoise2D(alea(SEED))
-let noise3D = createNoise3D(alea(SEED))
-let noise4D = createNoise4D(alea(SEED))
+
+const worker = new Worker('offscreen.js', { type: 'module' })
 
 /**
  * @type CanvasRenderingContext2D
  */
 let ctx
-let W, H, time, x0, y0, cx, cy, wW, hH, capturer
 
-// 25 frames per second for 5 seconds => 125 frames per loop
-const TOTALT_FRAME_N = 25 * 5
+/**
+ * @type OffscreenCanvas
+ */
+let offscreen
+
+let W, H, x0, y0, cx, cy, wW, hH, capturer
 
 const RECORD = false
 
-const TWO_PI = Math.PI * 2
-
-function periodicFunction(progress, offset, x, y) {
-  const R = 1.6
-  const S = 0.016
-  // const S = 0.007
-  const P = progress
-  // console.log({progress: progress/10})
-  // return progress/10;
-  return noise2D(
-    // return noise3D(
-    // return noise4D(
-    offset + R * Math.cos(P * TWO_PI),
-    R * Math.sin(P * TWO_PI),
-    S * y,
-    S * x
-  )
-}
-
-function radialOffset(x, y) {
-  return Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2))
-}
-
-function frame(n) {
-  let progress = n / TOTALT_FRAME_N
-  ctx.fillStyle = '#000'
-
-  ctx.fillRect(0, 0, wW, hH)
-  ctx.save()
-
-  ctx.globalCompositeOperation = 'lighter'
-
-  // Loop over all pixels inside margin on the x-axis
-  for (let i = x0; i < W; i += 10) {
-    // Loop over all pixels inside margin on the y-axis
-    for (let j = y0; j < H; j += 10) {
-      let x = i
-      let y = j
-      const distancefactor = radialOffset(x, y) / radialOffset(0, 0)
-      const vertdistancefactor = radialOffset(0, y) / radialOffset(0, 0)
-
-      const g = 75 * 2
-      const r = 1 * (1 + 65 * vertdistancefactor)
-      const b = 128 * 2
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
-      const taper = 50 * (1 - 0.9 * distancefactor)
-
-      let dx = taper * periodicFunction(progress - 0.001 * radialOffset(x, y), 0, x, y)
-      let dy = taper * periodicFunction(progress - 0.001 * radialOffset(x, y), 150, x, y)
-
-      ctx.beginPath()
-      ctx.arc(x + dx, y + dy, 1, 0, TWO_PI)
-      ctx.fill()
-    }
-  }
-
-  ctx.restore()
-}
-
-function loop(frameN) {
-  // console.log(frameN)
-  frame(frameN)
-  if (frameN < TOTALT_FRAME_N) {
-    requestAnimationFrame(loop.bind(null, frameN + 1))
-    if (capturer) {
-      capturer.capture(ctx.canvas)
-    }
-  } else if (capturer) {
-    capturer.stop()
-    capturer.save()
-  } else {
-    requestAnimationFrame(loop.bind(null, 0))
-  }
-}
-
 function init() {
-  time = new Date().getTime()
   let canvas = document.createElement('canvas')
   let dim = 500
   // let xDim = dim;
@@ -106,7 +29,10 @@ function init() {
   canvas.setAttribute('width', `${xDim}px`)
   canvas.setAttribute('height', `${yDim}px`)
   document.body.appendChild(canvas)
-  ctx = canvas.getContext('2d')
+
+  offscreen = canvas.transferControlToOffscreen()
+
+  // ctx = canvas.getContext('2d')
 
   wW = canvas.width
   hH = canvas.height
@@ -116,6 +42,22 @@ function init() {
   y0 = margin
   cx = wW / 2
   cy = hH / 2
+
+  worker.postMessage(
+    {
+      canvas: offscreen,
+      cx,
+      cy,
+      x0,
+      y0,
+      W,
+      H,
+      wW,
+      hH,
+    },
+    [offscreen]
+  )
+
   if (RECORD) {
     capturer = new CCapture({
       format: 'webm',
@@ -128,4 +70,4 @@ function init() {
 }
 
 init()
-loop(0)
+// loop(0)
