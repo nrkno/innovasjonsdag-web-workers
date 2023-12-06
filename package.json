@@ -2,6 +2,7 @@
   "name": "innovasjonsdag-web-workers",
   "version": "0.0.0",
   "description": "Forbedre ytelse av canvas-animasjon ved å avlaste hovedtråden med web workers - Innovasjonsdager desember 2023",
+  "type": "module",
   "main": "script.js",
   "scripts": {
     "dev": "vite"
