@@ -12,9 +12,9 @@ let noise4D = createNoise4D(alea(SEED))
 let ctx
 let W, H, time, x0, y0, cx, cy, wW, hH, capturer
 
-// const TOTALT_FRAME_N = 25*3;
+// 25 frames per second for 5 seconds => 125 frames per loop
 const TOTALT_FRAME_N = 25 * 5
-// const TOTALT_FRAME_N = 15;
+
 const RECORD = false
 
 const TWO_PI = Math.PI * 2
@@ -32,73 +32,44 @@ function periodicFunction(progress, offset, x, y) {
     offset + R * Math.cos(P * TWO_PI),
     R * Math.sin(P * TWO_PI),
     S * y,
-    S * x,
+    S * x
   )
 }
 
 function radialOffset(x, y) {
   return Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2))
-  // return 1;
 }
 
 function frame(n) {
   let progress = n / TOTALT_FRAME_N
-  // ctx.fillStyle = "#353539";
-  // ctx.fillStyle = "#11ddcc";
   ctx.fillStyle = '#000'
-  // ctx.fillStyle = "#000";
-  // ctx.globalCompositeOperation = "source-over"
 
   ctx.fillRect(0, 0, wW, hH)
   ctx.save()
-  // ctx.fillStyle = "#FF9C54";
-  // ctx.fillStyle = "#004952";
 
-  // let g = 73
-  // let b = 82
-  // ctx.fillStyle = `rgb(0, ${g}, ${b})`;
-
-  // ctx.fillStyle = "#ff9930";
-  // ctx.fillStyle = "purple";
-  // ctx.fillStyle = "indigo";
-  // ctx.strokeStyle = "indigo";
-  // ctx.lineWidth = 1.5;
   ctx.globalCompositeOperation = 'lighter'
 
   // Loop over all pixels inside margin on the x-axis
-  for (let i = x0; i < W; i += 8) {
+  for (let i = x0; i < W; i += 10) {
     // Loop over all pixels inside margin on the y-axis
-    for (let j = y0; j < H; j += 8) {
+    for (let j = y0; j < H; j += 10) {
       let x = i
       let y = j
       const distancefactor = radialOffset(x, y) / radialOffset(0, 0)
       const vertdistancefactor = radialOffset(0, y) / radialOffset(0, 0)
 
-      // const cyclingnoise = noise2D(
-      //   0.01 * Math.cos(progress * TWO_PI),
-      //   0.01 * Math.sin(progress * TWO_PI),
-      // ) * 10;
-      // let dx = 25 * periodicFunction(progress, 0, x, y);
-      // let dy = 25 * periodicFunction(progress, 200, x, y);
-      const g = 75*2 //* (1 + (0.45 * distancefactor))
-      const r = 1 * (1 + (65* vertdistancefactor))
-      const b = 128*2 //* (1 - distancefactor)
+      const g = 75 * 2
+      const r = 1 * (1 + 65 * vertdistancefactor)
+      const b = 128 * 2
       ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
-      const taper = 50 * (1 - .9 * distancefactor)
-      // const taper = 30
-      // // console.log({taper, x, y})
+      const taper = 50 * (1 - 0.9 * distancefactor)
+
       let dx = taper * periodicFunction(progress - 0.001 * radialOffset(x, y), 0, x, y)
       let dy = taper * periodicFunction(progress - 0.001 * radialOffset(x, y), 150, x, y)
 
       ctx.beginPath()
-      // ctx.arc(x + dx, y + dy, 1.1, 0, TWO_PI)
       ctx.arc(x + dx, y + dy, 1, 0, TWO_PI)
-      // ctx.arc(x + dx, y + dy, 3, 4, TWO_PI)
-      // ctx.arc(x + dx, y + dy, 0.25, 0, TWO_PI);
-      // ctx.arc(x + dx, y + dy, 0.35, 0, TWO_PI);
-      // ctx.arc(x + dx, y + dy, 0.4, 0, TWO_PI);
       ctx.fill()
-      // ctx.stroke();
     }
   }
 
