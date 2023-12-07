@@ -6,6 +6,8 @@ Laget av Skjalg Teig ved NRKs innovasjonsdager desember 2023
 
 Videreføring av arbeidet med perfekte simplex-loops ved NRKs innovasjonsdager oktober 2023
 
+Utledet fra [mollerse](https://github.com/mollerse/)'s gist for simplex loops https://gist.github.com/mollerse/3bcaedb67d463b8d6a6558c3dc634b30
+
 ## Nyttig info?
 
 - [Offscreen canvas](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas)

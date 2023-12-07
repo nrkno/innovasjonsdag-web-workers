@@ -1,4 +1,3 @@
-// Modified from mollerse's gist for simplex loops https://gist.github.com/mollerse/3bcaedb67d463b8d6a6558c3dc634b30
 
 const worker = new Worker('offscreen.js', { type: 'module' })
 
