@@ -16,6 +16,7 @@ onmessage = evt => {
   //   requestAnimationFrame(ctx.drawImage(bmp, 0, 0)
   //   bmp.transferFromImageBitmap()
   // })
+  postMessage('loaded');
   const loop = frameN => {
     // console.log({ frameN })
     ctx.drawImage(allBitmaps[frameN], 0, 0)

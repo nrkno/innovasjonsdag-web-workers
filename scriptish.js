@@ -57,6 +57,13 @@ function init() {
     [offscreen]
   )
 
+  worker.addEventListener('message', (e) => {
+    // console.log(`Got message from worker: ${JSON.stringify(e.data)}`);
+    if (e.data === 'loaded') {
+      document.querySelector('marquee').remove()
+    }
+  })
+
   if (RECORD) {
     capturer = new CCapture({
       format: 'webm',
